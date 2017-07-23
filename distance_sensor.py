@@ -21,9 +21,9 @@ from time import sleep
 from time import time
 
 CM_CONVERTOR  = 17150
-PIN_TRIGGER   = 23
-PIN_ECHO      = 24
-TIMESTAMP_SETUP = 2
+PIN_TRIGGER   = 8
+PIN_ECHO      = 7
+TIMESTAMP_SETUP = .5
 TIMESTAMP_EXEC  = 0.00001
 
 
