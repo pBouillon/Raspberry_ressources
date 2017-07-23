@@ -1,3 +1,11 @@
+# -*- coding: utf-8 -*-
+
+'''
+    Small code sample using the HC-SR04 sensor
+    printing distance between the sensor and an object
+    every ~2 seconds (TIMESTAMP_SETUP + TIMESTAMP_EXEC)
+'''
+
 import RPi.GPIO
 from RPi.GPIO import output
 from RPi.GPIO import input
@@ -20,44 +28,54 @@ TIMESTAMP_EXEC  = 0.00001
 
 
 def loop ():
-	pulse_start = 0
-	pulse_end   = 0
-	while True:
-		output (PIN_TRIGGER, False)
-		sleep  (TIMESTAMP_SETUP)
+    '''Infinity loop
+    Setup the trigger
+    get the echo
+    calculate and prints distance
+    prints out of range if the distance is incorrect
+    '''
+    pulse_start = 0
+    pulse_end   = 0
+    
+    while True:
+        output (PIN_TRIGGER, False)
+        sleep  (TIMESTAMP_SETUP)
 
-		output (PIN_TRIGGER, True)
-		sleep  (TIMESTAMP_EXEC)
-		output (PIN_TRIGGER, False)
+        output (PIN_TRIGGER, True)
+        sleep  (TIMESTAMP_EXEC)
+        output (PIN_TRIGGER, False)
 
-		while input (PIN_ECHO) == 0:
-			pulse_start = time()
+        while not input (PIN_ECHO):
+            pulse_start = time()
 
-		while input (PIN_ECHO) == 1:
-			pulse_end  = time()
+        while input (PIN_ECHO):
+            pulse_end  = time()
 
-		distance = (pulse_end - pulse_start) * CM_CONVERTOR
-		distance = round (distance, 2)
-		distance-= 0.5 
-		
-		if 2 < distance < 250 :
-			print ("Distance: ", distance, "cm")
-		else:
-			print ("Out Of Range (",distance,")")
-		
+        distance = (pulse_end - pulse_start) * CM_CONVERTOR
+        distance = round (distance, 2)
+        distance-= 0.5 
+        
+        if 2 < distance < 250 :
+            print ("Distance: ", distance, "cm")
+        else:
+            print ("Out Of Range (",distance,")")
+        
 
 
 def setup_sensor ():
-	setmode (BCM)
-	
-	setup (PIN_TRIGGER, OUT)
-	setup (PIN_ECHO,    IN )
-	
+    '''Setup the environment
+    mode BCM
+    using TRIGGER as output
+    using ECHO    as input
+    '''
+    setmode (BCM)
+    setup (PIN_TRIGGER, OUT)
+    setup (PIN_ECHO,    IN )
 
 if __name__ == '__main__':
-	try:
-		setup_sensor ()
-		loop ()
-	except (KeyboardInterrupt, SystemExit):
-		cleanup ()
-		exit ("\nProgram was ended and pins cleaned up 	\n")
+    try:
+        setup_sensor ()
+        loop ()
+    except (KeyboardInterrupt, SystemExit):
+        cleanup ()
+        exit ("\nProgram was ended and pins cleaned up     \n")
